@@ -14,6 +14,20 @@ module.exports = {
     name,
     version,
     serviceTimeout: 30,
+    // adding code -- Start
+    postgres: {
+      option: {
+        dialect: 'postgres', 
+        host: 'localhost',
+        port: 5432,
+        database: 'sequelize',
+        username: 'sequelize',
+        password: 'sequelize',
+        logging: msg => getLogger(name, version, 'debug').info(msg), 
+      },
+      client: null
+    },
+    // adding code -- End
     log: () => getLogger(name, version, 'debug'),
   },
   production: {

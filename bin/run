@@ -2,10 +2,38 @@
 
 const http = require('http');
 
+const Sequelize = require('sequelize'); // -- Add sequelize
+
 const config = require('../config')[process.env.NODE_ENV || 'development'];
 
 const log = config.log();
 const app = require('../app')(config);
+
+
+
+
+// Option 1: Passing a connection URI
+// const sequelize = new Sequelize('sqlite::memory:') // Example for sqlite
+// const sequelize = new Sequelize('postgres://sequelize:sequelize@localhost:5432/sequelize') // Example for postgres
+
+
+async function connectToPostgres() {  // -- Add database connection
+  // const sequelize = new Sequelize(config.postgres.options); // -- config/index.js
+  const sequelize = new Sequelize({
+    host: 'localhost',
+    dialect: 'postgres'
+  }); // -- config/index.js
+  try {
+    await sequelize.authenticate();
+    log.info('Connection has been established successfully.');
+    return sequelize
+  } catch (error){
+    log.error('Unable to connect to the database:', error );
+  }
+}
+
+const postgresClient = connectToPostgres();
+// config.postgres.client = connectToPostgres(); // alternative code
 
 const server = http.createServer(app);
 
