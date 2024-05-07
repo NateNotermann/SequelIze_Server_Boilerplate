@@ -10,15 +10,17 @@ const log = config.log();
 const app = require('../app')(config);
 
 
-
+// ------ CONNECTING TO DATABASE ------
 
 // Option 1: Passing a connection URI
 // const sequelize = new Sequelize('sqlite::memory:') // Example for sqlite
+
+// ------ OPTION 1: Passing a connection URI. (THIS code works by it's self) ------
 // const sequelize = new Sequelize('postgres://sequelize:sequelize@localhost:5432/sequelize') // Example for postgres
 
-
+// ------ OPTION 2: Option 3: Passing parameters separately (other dialects)
 async function connectToPostgres() {  // -- Add database connection
-  // const sequelize = new Sequelize(config.postgres.options); // -- config/index.js
+  // const sequelize = new Sequelize(config.postgres.options);  // -- config/index.js
   const sequelize = new Sequelize({
     host: 'localhost',
     dialect: 'postgres'
@@ -32,8 +34,13 @@ async function connectToPostgres() {  // -- Add database connection
   }
 }
 
-const postgresClient = connectToPostgres();
-// config.postgres.client = connectToPostgres(); // alternative code
+// alternative code
+// const postgresClient = connectToPostgres();
+// config.postgres.client = postgresClient; 
+config.postgres.client = connectToPostgres(); 
+
+
+
 
 const server = http.createServer(app);
 
