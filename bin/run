@@ -14,30 +14,36 @@ const app = require('../app')(config);
 
 // Option 1: Passing a connection URI
 // const sequelize = new Sequelize('sqlite::memory:') // Example for sqlite
+const sequelize = new Sequelize(config.postgres.database, config.postgres.username, config.postgres.password, {
+  host: 'localhost',
+  dialect: 'postgres'
+});
 
 // ------ OPTION 1: Passing a connection URI. (THIS code works by it's self) ------
 // const sequelize = new Sequelize('postgres://sequelize:sequelize@localhost:5432/sequelize') // Example for postgres
 
 // ------ OPTION 2: Option 3: Passing parameters separately (other dialects)
-async function connectToPostgres() {  // -- Add database connection
+function connectToPostgres() {  // -- Add database connection (Removed async part)
   // const sequelize = new Sequelize(config.postgres.options);  // -- config/index.js
   const sequelize = new Sequelize({
     host: 'localhost',
     dialect: 'postgres'
   }); // -- config/index.js
-  try {
-    await sequelize.authenticate();
-    log.info('Connection has been established successfully.');
-    return sequelize
-  } catch (error){
-    log.error('Unable to connect to the database:', error );
-  }
+  // try {
+    sequelize.authenticate().then(() => {
+      log.info('Connection has been established successfully.');
+    }).catch ((error) => {
+      log.error('Unable to connect to the database:', error );
+    process.exit(1);
+  });
+  return sequelize;
 }
 
 // alternative code
-// const postgresClient = connectToPostgres();
-// config.postgres.client = postgresClient; 
-config.postgres.client = connectToPostgres(); 
+const postgresClient = connectToPostgres();
+console.log(postgresClient);
+config.postgres.client = postgresClient; 
+// config.postgres.client = connectToPostgres(); 
 
 
 
